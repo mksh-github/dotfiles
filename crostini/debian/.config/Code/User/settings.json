@@ -1,0 +1,85 @@
+{
+  "files.eol": "\n",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "zenMode.centerLayout": false,
+  "zenMode.hideLineNumbers": false,
+  "editor.formatOnSave": true,
+  "editor.fontSize": 12,
+  "editor.fontWeight": "normal",
+  "editor.fontFamily": "'Noto Sans Mono', 'Source Han Code JP L', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+  "editor.mouseWheelZoom": true,
+  "terminal.integrated.fontSize": 12,
+  "window.zoomLevel": 1,
+  "redhat.telemetry.enabled": false,
+  "explorer.confirmDragAndDrop": false,
+  // icon
+  "workbench.iconTheme": "vscode-icons",
+  "vsicons.dontShowNewVersionMessage": true,
+  // Git
+  "git.showPushSuccessNotification": true,
+  "git-graph.dialog.fetchRemote.prune": true,
+  "git-graph.repository.fetchAndPrune": true,
+  "githubPullRequests.fileListLayout": "flat",
+  // Python
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "autopep8",
+  "python.linting.flake8Args": [
+    "--max-line-length",
+    "150"
+  ],
+  // JavaScript
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  // Dart, Flutter
+  "dart.flutterSdkPath": "/usr/local/lib/flutter",
+  "dart.openDevTools": "flutter",
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [
+      80
+    ],
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": false
+  },
+  // Todo Tree
+  "todo-tree.general.tags": [
+    "BUG",
+    "HACK",
+    "FIXME",
+    "TODO",
+    "XXX",
+    "[ ]",
+    "[x]",
+    "NOTE",
+    "WARNING"
+  ],
+  // Drawio
+  // "hediet.vscode-drawio.local-storage": "",
+  "hediet.vscode-drawio.theme": "atlas",
+  "workbench.editorAssociations": {
+    "*.drawio.png": "hediet.vscode-drawio",
+    "*.ipynb": "jupyter-notebook"
+  },
+  // PlantUML
+  "plantuml.render": "Local",
+  "plantuml.exportFormat": "png",
+  // Markdown
+  "markdown-pdf.breaks": true,
+  "markdown-pdf.orientation": "landscape",
+  // SQL Server
+  "mssql.connections": [
+    {
+      "server": "{{put-server-name-here}}",
+      "database": "{{put-database-name-here}}",
+      "user": "{{put-username-here}}",
+      "password": "{{put-password-here}}"
+    }
+  ],
+}
