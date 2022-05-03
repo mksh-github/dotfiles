@@ -5,19 +5,19 @@ if [ ${0} != ${BASH_SOURCE} ] ; then
     return 1
 fi
 
-source_dir=${1}
-
 readonly MOVE_EXIST_DOTFILES_TO="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
 
+source_dir=${1}
 if [ ! "${source_dir}" ] ; then
     source_dir=${HOME}/dotfiles
 fi
 
-# check platform
-case "$(uname)" in
-    'Linux' | 'linux')
+# determination of target directory
+case "$(uname | tr \"[:upper:]\" \"[:lower:]\")" in
+    'linux')
         if [ "$(uname -n)" = 'penguin' ] ; then
             # Crostini
+            # NOTE: penguin only
             source_dir=${source_dir}/crostini
 
             if [ -f '/etc/debian_version' ] ; then
@@ -25,7 +25,7 @@ case "$(uname)" in
             fi
         fi
         ;;
-    'Darwin' | 'darwin')
+    'darwin')
         source_dir=${source_dir}/macos
 
         if [ "$(uname -m)" = 'arm64' ] ; then
@@ -43,28 +43,32 @@ case "$(uname)" in
         exit 1
 esac
 
-dotfiles=$(find ${source_dir} -maxdepth 1 -name ".*" -not -name ".config" -not -name ".ssh")
-printf 'target is below:\n'
-printf "${dotfiles}" | xargs -n1
-
-printf '\n'
-printf "If a file exists, the file will be moved to \"${MOVE_EXIST_DOTFILES_TO}\".\n"
-printf 'If a symbolic link exists, the link will be removed.\n'
-read -p 'Would you like to continue? (y/N): ' -n 1
-printf '\n'
-if [[ ${REPLY} =~ ^[Yy]$ ]]; then
-    :
-else
-    exit 0
-fi;
-
 if [ ! -d ${source_dir} ] ; then
     printf "no exists \"${source_dir}\"\n"
     exit 1
 else
-    printf '\n'
+    :
 fi
 
+# suggest
+dotfiles=$(find ${source_dir} -maxdepth 1 -name ".*" -not -name ".config" -not -name ".ssh")
+printf 'The target files are as follows:\n'
+for df in ${dotfiles[@]} ; do
+    printf "  $(basename ${df})\n"
+done
+
+# confirm
+printf '\n'
+printf "If a file exists, the file will be moved to \"${MOVE_EXIST_DOTFILES_TO}\".\n"
+printf 'If a symbolic link exists, the link will be removed.\n'
+read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
+if [[ ${REPLY} =~ ^[Yy]$ ]] ; then
+    :
+else
+    exit 0
+fi
+
+# do
 mkdir -p ${MOVE_EXIST_DOTFILES_TO}
 
 exists_df=
