@@ -7,7 +7,7 @@ fi
 
 source_dir=${1}
 
-readonly MOVE_EXIST_DOTFILES_TO="${HOME}/dotfiles_backup/dotfiles/$(date '+%Y%m%d%H%M%S')"
+readonly MOVE_EXIST_DOTFILES_TO="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
 
 if [ ! "${source_dir}" ] ; then
     source_dir=${HOME}/dotfiles
