@@ -71,7 +71,9 @@ else
 fi
 
 # install
-cd "$(get_symlink_target_dir ${HOME}/dotfiles)" || exit 1
+cd "$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))" || exit 1
+
+source ./scripts/install.func.sh $(pwd) ${_MOVE_EXIST_DOTFILES_TO}
 
 for df in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".gitignore") ; do
     exists_df="${HOME}/$(basename ${df})"
@@ -83,8 +85,9 @@ for df in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".
         mv ${exists_df} ${_MOVE_EXIST_DOTFILES_TO} &&
         printf "* mv %s %s\n" ${exists_df} ${_MOVE_EXIST_DOTFILES_TO}
     elif [ -d "${exists_df}" ] ; then
-        # TODO: .config .ssh
-        printf "* %s\n" ${exists_df}
+        # アプリケーション固有の設定データ
+        [ "$(basename ${df})" = '.config' ] && symlink_application_config
+        [ "$(basename ${df})" = '.ssh' ] && replace_ssh_config
         continue
     fi
 
@@ -93,6 +96,6 @@ for df in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".
 done
 
 # cleanup empty backup directories
-rmdir /tmp/dotfiles_backup/*
+rmdir /tmp/dotfiles_backup/* 2&> /dev/null
 
 exit 0
