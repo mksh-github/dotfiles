@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 function get_symlink_target_dir () {
-    local dotfiles_repo=${1}
+    local -r DOTFILES_REPO=${1}
     local symlink_target_dir=
 
-    if [ ! -d "${dotfiles_repo}" ] ; then
-        printf "no exists \"${dotfiles_repo}\"\n"
+    if [ ! -d "${DOTFILES_REPO}" ] ; then
+        printf "no exists \"%s\"\n" ${DOTFILES_REPO}
         return 1
     fi
 
@@ -14,7 +14,7 @@ function get_symlink_target_dir () {
             if [ "$(uname -n)" = 'penguin' ] ; then
                 # Crostini
                 # NOTE: penguin only
-                symlink_target_dir=${dotfiles_repo}/crostini
+                symlink_target_dir=${DOTFILES_REPO}/crostini
 
                 if [ -f '/etc/debian_version' ] ; then
                     symlink_target_dir=${symlink_target_dir}/debian
@@ -28,7 +28,7 @@ function get_symlink_target_dir () {
             fi
             ;;
         'darwin')
-            symlink_target_dir=${dotfiles_repo}/macos
+            symlink_target_dir=${DOTFILES_REPO}/macos
 
             if [ "$(uname -m)" = 'arm64' ] ; then
                 # M1 Mac
@@ -60,7 +60,7 @@ fi
 readonly _MOVE_EXIST_DOTFILES_TO="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
 
 # confirm
-printf "If a file exists, the file will be moved to \"${_MOVE_EXIST_DOTFILES_TO}\".\n"
+printf "If a file exists, the file will be moved to \"%s\".\n" ${_MOVE_EXIST_DOTFILES_TO}
 printf 'If a symbolic link exists, the link will be removed.\n'
 read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
 if [[ ${REPLY} =~ ^[Yy]$ ]] ; then
@@ -78,18 +78,18 @@ for df in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".
 
     if [ -L "${exists_df}" ] ; then
         unlink ${exists_df} &&
-        printf "* unlink ${exists_df}\n"
+        printf "* unlink %s\n" ${exists_df}
     elif [ -f "${exists_df}" ] ; then
         mv ${exists_df} ${_MOVE_EXIST_DOTFILES_TO} &&
-        printf "* mv ${exists_df} ${_MOVE_EXIST_DOTFILES_TO}\n"
+        printf "* mv %s %s\n" ${exists_df} ${_MOVE_EXIST_DOTFILES_TO}
     elif [ -d "${exists_df}" ] ; then
         # TODO: .config .ssh
-        printf "* ${exists_df} is directory\n"
+        printf "* %s\n" ${exists_df}
         continue
     fi
 
     ln -s ${df} ${exists_df} &&
-    printf "  ${exists_df} -> ${df}\n"
+    printf "  %s -> %s\n" ${exists_df} ${df}
 done
 
 # cleanup empty backup directories
