@@ -1,17 +1,82 @@
 {
   "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/.git": false,
+    "**/.git/[^c]*": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/[Dd]esktop.ini": true,
+    "**/Thumbs.db": true,
+    "**/__pycache__": true,
+  },
+  "search.showLineNumbers": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/tmp": true,
+    "**/bak": true,
+    "**/trash": true
+  },
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.confirmOnExit": "always",
   "zenMode.centerLayout": false,
   "zenMode.hideLineNumbers": false,
+  "debug.inlineValues": true,
+  "debug.openDebug": "openOnSessionStart",
+  "debug.internalConsoleOptions": "openOnSessionStart",
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?　〜！％＆（）ー＝＋｜／；：、。「」【】『』・？",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.copyWithSyntaxHighlighting": false,
+  "editor.renderControlCharacters": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.showFoldingControls": "always",
+  "editor.dragAndDrop": false,
+  "editor.mouseWheelZoom": true,
   "editor.formatOnSave": true,
-  // icon
+  "editor.formatOnPaste": true,
+  // "editor.formatOnType": true,
+  "editor.minimap.showSlider": "always",
+  "editor.minimap.size": "fit",
+  "editor.tabSize": 2,
+  "editor.rulers": [
+    80,
+    150
+  ],
+  "explorer.confirmDragAndDrop": false,
+  "explorer.incrementalNaming": "smart",
+  "workbench.startupEditor": "readme",
+  "workbench.editor.tabSizing": "shrink",
   "workbench.iconTheme": "vscode-icons",
+  "workbench.editorAssociations": {
+    "*.drawio.png": "hediet.vscode-drawio",
+    "*.ipynb": "jupyter-notebook"
+  },
+  // language mode
+  "[python]": {
+    "editor.tabSize": 4,
+  },
+  "[csv]": {
+    "editor.wordWrap": "off"
+  },
+  "[log]": {
+    "editor.wordWrap": "off"
+  },
+  // vscode-icons
   "vsicons.dontShowNewVersionMessage": true,
   // Git
   "git.showPushSuccessNotification": true,
+  "git.alwaysShowStagedChangesResourceGroup": true,
   "git-graph.dialog.fetchRemote.prune": true,
   "git-graph.repository.fetchAndPrune": true,
+  // GitHub
   "githubPullRequests.fileListLayout": "flat",
   // Python
   "python.linting.pylintEnabled": false,
@@ -29,11 +94,6 @@
   "dart.flutterSdkPath": "/usr/local/lib/flutter",
   "dart.openDevTools": "flutter",
   "[dart]": {
-    "editor.formatOnSave": true,
-    "editor.formatOnType": true,
-    "editor.rulers": [
-      80
-    ],
     "editor.selectionHighlight": false,
     "editor.suggest.snippetsPreventQuickSuggestions": false,
     "editor.suggestSelection": "first",
@@ -55,23 +115,21 @@
   // Drawio
   // "hediet.vscode-drawio.local-storage": "",
   "hediet.vscode-drawio.theme": "atlas",
-  "workbench.editorAssociations": {
-    "*.drawio.png": "hediet.vscode-drawio",
-    "*.ipynb": "jupyter-notebook"
-  },
   // PlantUML
   "plantuml.render": "Local",
   "plantuml.exportFormat": "png",
   // Markdown
   "markdown-pdf.breaks": true,
   "markdown-pdf.orientation": "landscape",
+  // YAML
+  "redhat.telemetry.enabled": false,
   // SQL Server
   "mssql.connections": [
     {
       "server": "{{put-server-name-here}}",
       "database": "{{put-database-name-here}}",
       "user": "{{put-username-here}}",
-      "password": "{{put-password-here}}"
+      "password": ""
     }
   ],
 }
