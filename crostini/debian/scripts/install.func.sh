@@ -23,6 +23,24 @@ function _symlink_config () {
     printf "  %s -> %s\n" ${EXISTS_CF} ${SYMLINK_CF}
 }
 
+function _replace_config () {
+    local -r CF_DEST=${1}
+    local -r CF_SOURCE=${2}
+    local -r MOVE_EXIST_CONFIG_TO=${3}
+
+    if [ -L "${CF_DEST}" ] ; then
+        unlink "${CF_DEST}" &&
+        printf "* unlinked %s\n" ${CF_DEST}
+    elif [ -f "${CF_DEST}" ] ; then
+        mkdir -p ${MOVE_EXIST_CONFIG_TO} &&
+        mv ${CF_DEST} ${MOVE_EXIST_CONFIG_TO} &&
+        printf "* moved %s to %s\n" ${CF_DEST} ${MOVE_EXIST_CONFIG_TO}
+    fi
+
+    cp ${CF_SOURCE} ${CF_DEST} &&
+    printf "  copy %s to %s\n" ${CF_SOURCE} ${CF_DEST}
+}
+
 function _symlink_vscode_config () {
     local -r VSCODE_CONFIG_DIR='.config/Code/User'
     local -r MOVE_EXIST_CONFIG_TO="${_BACKUP_DIR}/vscode"
@@ -59,7 +77,7 @@ function _symlink_fcitx_config () {
         "${HOME}/${FCITX_CONFIG_DIR}/${cf}" \
         "${_CURRENT_PLATFORM_DIR}/${FCITX_CONFIG_DIR}/${cf}" \
         "${MOVE_EXIST_CONFIG_TO}/"
-    
+
     cf='profile'
     _symlink_config \
         "${HOME}/${FCITX_CONFIG_DIR}/${cf}" \
@@ -84,7 +102,7 @@ function _symlink_gtk3_config () {
         "${HOME}/${GTK3_CONFIG_DIR}/${cf}" \
         "${_CURRENT_PLATFORM_DIR}/${GTK3_CONFIG_DIR}/${cf}" \
         "${MOVE_EXIST_CONFIG_TO}/"
-    
+
     cf='settings.ini'
     _symlink_config \
         "${HOME}/${GTK3_CONFIG_DIR}/${cf}" \
@@ -109,7 +127,7 @@ function _symlink_gtk4_config () {
         "${HOME}/${GTK4_CONFIG_DIR}/${cf}" \
         "${_CURRENT_PLATFORM_DIR}/${GTK4_CONFIG_DIR}/${cf}" \
         "${MOVE_EXIST_CONFIG_TO}/"
-    
+
     cf='settings.ini'
     _symlink_config \
         "${HOME}/${GTK4_CONFIG_DIR}/${cf}" \
@@ -136,7 +154,7 @@ function replace_ssh_config () {
     fi
 
     cf='config'
-    _symlink_config \
+    _replace_config \
         "${HOME}/${SSH_CONFIG_DIR}/${cf}" \
         "${_CURRENT_PLATFORM_DIR}/${SSH_CONFIG_DIR}/${cf}" \
         "${MOVE_EXIST_CONFIG_TO}/"
