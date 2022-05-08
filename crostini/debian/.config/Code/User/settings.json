@@ -1,0 +1,140 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "files.exclude": {
+    "**/.git": false,
+    "**/.git/[^c]*": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/[Dd]esktop.ini": true,
+    "**/Thumbs.db": true,
+    "**/__pycache__": true,
+  },
+  "search.showLineNumbers": true,
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/bower_components": true,
+    "**/*.code-search": true,
+    "**/tmp": true,
+    "**/bak": true,
+    "**/trash": true
+  },
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.confirmOnExit": "always",
+  "window.zoomLevel": 1,
+  "zenMode.centerLayout": false,
+  "zenMode.hideLineNumbers": false,
+  "debug.inlineValues": true,
+  "debug.openDebug": "openOnSessionStart",
+  "debug.internalConsoleOptions": "openOnSessionStart",
+  "editor.fontSize": 12,
+  "editor.fontWeight": "normal",
+  "editor.fontFamily": "'Noto Sans Mono', 'Source Han Code JP L', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?　〜！％＆（）ー＝＋｜／；：、。「」【】『』・？",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.copyWithSyntaxHighlighting": false,
+  "editor.renderControlCharacters": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.showFoldingControls": "always",
+  "editor.dragAndDrop": false,
+  "editor.mouseWheelZoom": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  // "editor.formatOnType": true,
+  "editor.minimap.showSlider": "always",
+  "editor.minimap.size": "fit",
+  "editor.tabSize": 2,
+  "editor.rulers": [
+    80,
+    150
+  ],
+  "explorer.confirmDragAndDrop": false,
+  "explorer.incrementalNaming": "smart",
+  "workbench.startupEditor": "readme",
+  "workbench.editor.tabSizing": "shrink",
+  "workbench.iconTheme": "vscode-icons",
+  "workbench.editorAssociations": {
+    "*.drawio.png": "hediet.vscode-drawio",
+    "*.ipynb": "jupyter-notebook"
+  },
+  // language mode
+  "[python]": {
+    "editor.tabSize": 4,
+  },
+  "[csv]": {
+    "editor.wordWrap": "off"
+  },
+  "[log]": {
+    "editor.wordWrap": "off"
+  },
+  // vscode-icons
+  "vsicons.dontShowNewVersionMessage": true,
+  // Git
+  "git.showPushSuccessNotification": true,
+  "git.alwaysShowStagedChangesResourceGroup": true,
+  "git-graph.dialog.fetchRemote.prune": true,
+  "git-graph.repository.fetchAndPrune": true,
+  // GitHub
+  "githubPullRequests.fileListLayout": "flat",
+  // Python
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.formatting.provider": "autopep8",
+  "python.linting.flake8Args": [
+    "--max-line-length",
+    "150"
+  ],
+  // JavaScript
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  // Dart, Flutter
+  "dart.flutterSdkPath": "/usr/local/lib/flutter",
+  "dart.openDevTools": "flutter",
+  "[dart]": {
+    "editor.selectionHighlight": false,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.suggestSelection": "first",
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": false
+  },
+  // Todo Tree
+  "todo-tree.general.tags": [
+    "BUG",
+    "HACK",
+    "FIXME",
+    "TODO",
+    "XXX",
+    "[ ]",
+    "[x]",
+    "NOTE",
+    "WARNING"
+  ],
+  // Drawio
+  // "hediet.vscode-drawio.local-storage": "",
+  "hediet.vscode-drawio.theme": "atlas",
+  // PlantUML
+  "plantuml.render": "Local",
+  "plantuml.exportFormat": "png",
+  // Markdown
+  "markdown-pdf.breaks": true,
+  "markdown-pdf.orientation": "landscape",
+  // YAML
+  "redhat.telemetry.enabled": false,
+  // SQL Server
+  "mssql.connections": [
+    {
+      "server": "{{put-server-name-here}}",
+      "database": "{{put-database-name-here}}",
+      "user": "{{put-username-here}}",
+      "password": ""
+    }
+  ],
+}

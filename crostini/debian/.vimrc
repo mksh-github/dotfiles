@@ -1,0 +1,10 @@
+set number
+set tabstop=2
+set wildmenu
+set incsearch
+set hlsearch
+set smartindent
+set laststatus=2
+set smartcase
+set ruler
+syntax enable
