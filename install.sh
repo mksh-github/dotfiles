@@ -53,62 +53,61 @@ function get_symlink_target_dir () {
     printf "${platform_dotfiles_dir}\n"
 }
 
-if [ "${0}" != "${BASH_SOURCE}" ] ; then
-    log WARN 'exit'
-    return 0
-fi
-
-# confirm
-printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" "${BACKUP_DIR}"
-printf 'Existing symlinks will be removed and re-linked.\n'
-read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n\n'
-if [[ ! "${REPLY}" =~ ^[Yy]$ ]] ; then
-    log INFO "Installation cancelled by user."
-    exit 0
-fi
-
-mkdir -p "${BACKUP_DIR}"
-log INFO "Backup directory created: ${BACKUP_DIR}"
-
-# install
-platform_dir="$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))"
-if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
-    echo $platform_dir
-    log ERROR "Failed to execute get_symlink_target_dir"
-    exit 1
-fi
-
-log INFO "Changing current directory to ${platform_dir}"
-cd "${platform_dir}"
-
-source ./scripts/install.func.sh "$(pwd)" "${BACKUP_DIR}"
-
-for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" \
-    -not -name ".git" \
-    -not -name ".gitignore" \
-    -not -name ".DS_Store") ;
-do
-    filename="$(basename ${dotfile_source})"
-    symlink_target_path="${HOME}/${filename}"
-
-    if [ -L "${symlink_target_path}" ] ; then
-        log INFO "Removing existing symlink: \"${symlink_target_path}\""
-        unlink ${symlink_target_path}
-    elif [ -f "${symlink_target_path}" ] ; then
-        log INFO "Backing up existing file: \"${symlink_target_path}\" to \"${BACKUP_DIR}/${filename}\""
-        mv ${symlink_target_path} ${BACKUP_DIR}
-    elif [ -d "${symlink_target_path}" ] ; then
-        # アプリケーション固有の設定データ
-        [ "${filename}" = '.config' ] && symlink_application_config
-        [ "${filename}" = '.ssh' ] && replace_ssh_config
-        continue
+function main() {
+    # confirm
+    printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" "${BACKUP_DIR}"
+    printf 'Existing symlinks will be removed and re-linked.\n'
+    read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n\n'
+    if [[ ! "${REPLY}" =~ ^[Yy]$ ]] ; then
+        log INFO "Installation cancelled by user."
+        exit 0
     fi
 
-    log INFO "Linking \"${symlink_target_path}\" -> \"${dotfile_source}\""
-    ln -s "${dotfile_source}" "${symlink_target_path}"
-done
+    mkdir -p "${BACKUP_DIR}"
+    log INFO "Backup directory created: ${BACKUP_DIR}"
 
-# cleanup empty backup directories
-rmdir /tmp/dotfiles_backup/* 2&> /dev/null
+    # install
+    platform_dir="$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))"
+    if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
+        echo $platform_dir
+        log ERROR "Failed to execute get_symlink_target_dir"
+        exit 1
+    fi
 
-exit 0
+    log INFO "Changing current directory to ${platform_dir}"
+    cd "${platform_dir}"
+
+    source ./scripts/install.func.sh "$(pwd)" "${BACKUP_DIR}"
+
+    for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" \
+        -not -name ".git" \
+        -not -name ".gitignore" \
+        -not -name ".DS_Store") ;
+    do
+        filename="$(basename ${dotfile_source})"
+        symlink_target_path="${HOME}/${filename}"
+
+        if [ -L "${symlink_target_path}" ] ; then
+            log INFO "Removing existing symlink: \"${symlink_target_path}\""
+            unlink ${symlink_target_path}
+        elif [ -f "${symlink_target_path}" ] ; then
+            log INFO "Backing up existing file: \"${symlink_target_path}\" to \"${BACKUP_DIR}/${filename}\""
+            mv ${symlink_target_path} ${BACKUP_DIR}
+        elif [ -d "${symlink_target_path}" ] ; then
+            # アプリケーション固有の設定データ
+            [ "${filename}" = '.config' ] && symlink_application_config
+            [ "${filename}" = '.ssh' ] && replace_ssh_config
+            continue
+        fi
+
+        log INFO "Linking \"${symlink_target_path}\" -> \"${dotfile_source}\""
+        ln -s "${dotfile_source}" "${symlink_target_path}"
+    done
+
+    # cleanup empty backup directories
+    rmdir /tmp/dotfiles_backup/* 2&> /dev/null
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main
+fi
