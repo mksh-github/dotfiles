@@ -85,7 +85,11 @@ cd "${platform_dir}"
 
 source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
 
-for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".gitignore") ; do
+for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" \
+    -not -name ".git" \
+    -not -name ".gitignore" \
+    -not -name ".DS_Store") ;
+do
     local filename=$(basename "${dotfile_source}")
     symlink_target_path="${HOME}/${filename}"
 
