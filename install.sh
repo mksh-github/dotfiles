@@ -1,101 +1,132 @@
 #!/usr/bin/env bash
+set -euCo pipefail
+
+source "$(dirname "${BASH_SOURCE[0]}")/utils/log.sh"
+
+BACKUP_DIR="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
+readonly BACKUP_DIR
+DOTFILES_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_REPO_ROOT
 
 function get_symlink_target_dir () {
-    local -r DOTFILES_REPO=${1}
-    local symlink_target_dir=
+    local platform_dotfiles_dir=""
+    local os_type=""
+    local machine_arch=""
 
-    if [ ! -d "${DOTFILES_REPO}" ] ; then
-        printf "no exists \"%s\"\n" ${DOTFILES_REPO}
+    os_type="$(uname | tr '[:upper:]' '[:lower:]')"
+    machine_arch="$(uname -m)"
+
+    case "${os_type}" in
+        linux)
+            if [ "$(uname -n)" = 'penguin' ] ; then # Crostini
+                # NOTE: penguin only
+                platform_dotfiles_dir="${DOTFILES_REPO_ROOT}/crostini"
+                if [ -f '/etc/debian_version' ] ; then
+                    platform_dotfiles_dir=${platform_dotfiles_dir}/debian
+                else
+                    log ERROR 'Unsupported Linux distribution on Crostini. Debian is expected.'
+                fi
+            else
+                log ERROR 'Unsupported Linux environment. This script is primarily for Crostini.'
+            fi
+            ;;
+        darwin) # macOS
+            platform_dotfiles_dir="${DOTFILES_REPO_ROOT}/macos"
+            if [ "${machine_arch}" = 'arm64' ] ; then # Apple Silicon Mac
+                platform_dotfiles_dir="${platform_dotfiles_dir}/m1"
+            else # Intel Mac
+                # platform_dotfiles_dir=${platform_dotfiles_dir}/intel
+                log ERROR "Unsupported macOS architecture: ${machine_arch}."
+            fi
+
+            # TODO:
+            log WARN 'macOS is unsupported. But this will be released in the future.'
+            return 0
+            ;;
+        *)
+            log ERROR "Unsupported OS: ${os_type}."
+            ;;
+    esac
+
+    if [ ! -d "${platform_dotfiles_dir}" ]; then
+        log ERROR "Platform-specific dotfiles directory not found: ${platform_dotfiles_dir}"
         return 1
     fi
 
-    case "$(uname | tr \"[:upper:]\" \"[:lower:]\")" in
-        'linux')
-            if [ "$(uname -n)" = 'penguin' ] ; then
-                # Crostini
-                # NOTE: penguin only
-                symlink_target_dir=${DOTFILES_REPO}/crostini
-
-                if [ -f '/etc/debian_version' ] ; then
-                    symlink_target_dir=${symlink_target_dir}/debian
-                else
-                    printf 'unsupported platform\n'
-                    exit 1
-                fi
-            else
-                printf 'unsupported platform\n'
-                exit 1
-            fi
-            ;;
-        'darwin')
-            symlink_target_dir=${DOTFILES_REPO}/macos
-
-            if [ "$(uname -m)" = 'arm64' ] ; then
-                # M1 Mac
-                # NOTE: Rosetta is disabled
-                symlink_target_dir=${symlink_target_dir}/m1
-            else
-                # symlink_target_dir=${symlink_target_dir}/intel
-                printf 'unsupported platform\n'
-                exit 1
-            fi
-
-            # TODO: 
-            printf 'macOS is unsupported. But this will be released in the future.\n'
-            exit 0
-            ;;
-        *)
-            printf 'unsupported platform\n'
-            exit 1
-    esac
-
-    echo ${symlink_target_dir}
+    printf '%s\n' "${platform_dotfiles_dir}"
+    return 0
 }
 
-if [ ${0} != ${BASH_SOURCE} ] ; then
-    printf 'exit\n'
-    return 0
-fi
+function main() {
+    local platform_dir=""
 
-readonly _MOVE_EXIST_DOTFILES_TO="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
-
-# confirm
-printf "If a file exists, the file will be moved to \"%s\".\n" ${_MOVE_EXIST_DOTFILES_TO}
-printf 'If a symbolic link exists, the link will be removed.\n'
-read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
-if [[ ${REPLY} =~ ^[Yy]$ ]] ; then
-    mkdir -p ${_MOVE_EXIST_DOTFILES_TO}
-    printf '\n'
-else
-    exit 0
-fi
-
-# install
-cd "$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))" || exit 1
-
-source ./scripts/install.func.sh $(pwd) ${_MOVE_EXIST_DOTFILES_TO}
-
-for df in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".gitignore") ; do
-    exists_df="${HOME}/$(basename ${df})"
-
-    if [ -L "${exists_df}" ] ; then
-        unlink ${exists_df} &&
-        printf "* unlink %s\n" ${exists_df}
-    elif [ -f "${exists_df}" ] ; then
-        mv ${exists_df} ${_MOVE_EXIST_DOTFILES_TO} &&
-        printf "* mv %s %s\n" ${exists_df} ${_MOVE_EXIST_DOTFILES_TO}
-    elif [ -d "${exists_df}" ] ; then
-        # アプリケーション固有の設定データ
-        [ "$(basename ${df})" = '.config' ] && symlink_application_config
-        [ "$(basename ${df})" = '.ssh' ] && replace_ssh_config
-        continue
+    platform_dir="$(get_symlink_target_dir "$(dirname "${BASH_SOURCE[0]}")")"
+    if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
+        log INFO "No platform detected"
+        return 0
+    else
+        log INFO "Platform detected. Using dotfiles from: ${platform_dir}"
     fi
 
-    ln -s ${df} ${exists_df} &&
-    printf "  %s -> %s\n" ${exists_df} ${df}
-done
+    # confirm
+    printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" "${BACKUP_DIR}"
+    printf 'Existing symlinks will be removed and re-linked.\n'
+    read -r -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
+    if [[ ! "${REPLY}" =~ ^[Yy]$ ]] ; then
+        log INFO "Installation cancelled by user."
+        return 0
+    fi
 
-# cleanup empty backup directories
-rmdir /tmp/dotfiles_backup/* 2&> /dev/null
+    mkdir -p "${BACKUP_DIR}"
+    log INFO "Backup directory created: ${BACKUP_DIR}"
 
-exit 0
+    # install
+    log INFO "Changing current directory to ${platform_dir}"
+    cd "${platform_dir}"
+
+    if [ -f "./scripts/install.func.sh" ]; then
+        info "Loading platform-specific functions from ./scripts/install.func.sh"
+        source "./scripts/install.func.sh" "$(pwd)" "${BACKUP_DIR}" # 第1引数: platform_dir, 第2引数: BACKUP_DIR
+        info "Loaded platform-specific functions."
+    else
+        log ERROR "Platform-specific install functions (./scripts/install.func.sh) not found in ${platform_dir}"
+        return 1
+    fi
+
+    log INFO "Linking dotfiles in HOME directory..."
+
+    find "$(pwd)" -maxdepth 1 -name ".*" \
+        -not -name ".git" \
+        -not -name ".gitignore" \
+        -not -name ".DS_Store" | \
+    while read -r dotfile_source ; do
+        local filename
+        local symlink_target_path
+
+        filename="$(basename "${dotfile_source}")"
+        symlink_target_path="${HOME}/${filename}"
+
+        if [ -L "${symlink_target_path}" ] ; then
+            log INFO "Removing existing symlink: \"${symlink_target_path}\""
+            unlink "${symlink_target_path}"
+        elif [ -f "${symlink_target_path}" ] ; then
+            log INFO "Backing up existing file: \"${symlink_target_path}\" to \"${BACKUP_DIR}/${filename}\""
+            mv "${symlink_target_path}" "${BACKUP_DIR}"
+        elif [ -d "${symlink_target_path}" ] ; then
+            # アプリケーション固有の設定データ
+            [ "${filename}" = '.config' ] && symlink_application_config
+            [ "${filename}" = '.ssh' ] && replace_ssh_config
+            continue
+        fi
+
+        log INFO "Linking \"${symlink_target_path}\" -> \"${dotfile_source}\""
+        ln -s "${dotfile_source}" "${symlink_target_path}"
+    done
+
+    # cleanup empty backup directories
+    find "${BACKUP_DIR}" -maxdepth 0 -type d -empty -delete 2>/dev/null || true
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@" || exit "$?"
+fi
