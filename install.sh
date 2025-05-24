@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euCo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/utils/log.sh"
 
