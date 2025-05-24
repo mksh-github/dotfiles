@@ -20,11 +20,11 @@ function get_symlink_target_dir () {
                 if [ -f '/etc/debian_version' ] ; then
                     platform_dotfiles_dir=${platform_dotfiles_dir}/debian
                 else
-                    log ERROR 'unsupported platform'
+                    log ERROR 'Unsupported Linux distribution on Crostini. Debian is expected.'
                     exit 1
                 fi
             else
-                log ERROR 'unsupported platform'
+                log ERROR 'Unsupported Linux environment. This script is primarily for Crostini.'
                 exit 1
             fi
             ;;
@@ -37,7 +37,7 @@ function get_symlink_target_dir () {
                 platform_dotfiles_dir=${platform_dotfiles_dir}/m1
             else
                 # platform_dotfiles_dir=${platform_dotfiles_dir}/intel
-                log ERROR 'unsupported platform'
+                log ERROR "Unsupported macOS architecture: ${machine_arch}."
                 exit 1
             fi
 
@@ -46,11 +46,14 @@ function get_symlink_target_dir () {
             exit 0
             ;;
         *)
-            log ERROR 'unsupported platform'
+            log ERROR "Unsupported OS: ${os_type}."
             exit 1
     esac
 
-    echo ${platform_dotfiles_dir}
+    if [ ! -d "${platform_dotfiles_dir}" ]; then
+        error_exit "Platform-specific dotfiles directory not found: ${platform_dotfiles_dir}"
+    fi
+    printf "${platform_dotfiles_dir}\n"
 }
 
 if [ ${0} != ${BASH_SOURCE} ] ; then
@@ -61,18 +64,20 @@ fi
 readonly BACKUP_DIR="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
 
 # confirm
-printf "If a file exists, the file will be moved to \"%s\".\n" ${BACKUP_DIR}
-printf 'If a symbolic link exists, the link will be removed.\n'
+printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" ${BACKUP_DIR}
+printf 'Existing symlinks will be removed and re-linked.\n'
 read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
 if [[ ${REPLY} =~ ^[Yy]$ ]] ; then
     mkdir -p ${BACKUP_DIR}
+    log INFO "Backup directory created: ${BACKUP_DIR}"
     printf '\n'
 else
     exit 0
 fi
 
 # install
-cd "$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))" || exit 1
+platform_dir="$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))"
+cd $platform_dir || exit 1
 
 source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
 
@@ -82,10 +87,10 @@ for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -
 
     if [ -L "${symlink_target_path}" ] ; then
         unlink ${symlink_target_path} &&
-        log INFO "* unlink \"${symlink_target_path}\""
+        log INFO "Removing existing symlink: \"${symlink_target_path}\""
     elif [ -f "${symlink_target_path}" ] ; then
         mv ${symlink_target_path} ${BACKUP_DIR} &&
-        log INFO "* mv \"${symlink_target_path}\" \"${BACKUP_DIR}\""
+        log INFO "Backing up existing file: \"${symlink_target_path}\" to \"${BACKUP_DIR}/${filename}\""
     elif [ -d "${symlink_target_path}" ] ; then
         # アプリケーション固有の設定データ
         [ "$(basename ${dotfile_source})" = '.config' ] && symlink_application_config
@@ -94,7 +99,7 @@ for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -
     fi
 
     ln -s ${dotfile_source} ${symlink_target_path} &&
-    log INFO "  \"${symlink_target_path}\" -> \"${dotfile_source}\""
+    log INFO "Linking \"${symlink_target_path}\" -> \"${dotfile_source}\""
 done
 
 # cleanup empty backup directories
