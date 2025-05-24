@@ -28,10 +28,9 @@ function get_symlink_target_dir () {
             fi
             ;;
         darwin) # macOS
-            platform_dotfiles_dir=${DOTFILES_REPO_ROOT}/macos
-
+            platform_dotfiles_dir="${DOTFILES_REPO_ROOT}/macos"
             if [ "${machine_arch}" = 'arm64' ] ; then # Apple Silicon Mac
-                platform_dotfiles_dir=${platform_dotfiles_dir}/m1
+                platform_dotfiles_dir="${platform_dotfiles_dir}/m1"
             else # Intel Mac
                 # platform_dotfiles_dir=${platform_dotfiles_dir}/intel
                 log ERROR "Unsupported macOS architecture: ${machine_arch}."
@@ -54,15 +53,15 @@ function get_symlink_target_dir () {
     printf "${platform_dotfiles_dir}\n"
 }
 
-if [ ${0} != ${BASH_SOURCE} ] ; then
+if [ "${0}" != "${BASH_SOURCE}" ] ; then
     log WARN 'exit'
     return 0
 fi
 
 # confirm
-printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" ${BACKUP_DIR}
+printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" "${BACKUP_DIR}"
 printf 'Existing symlinks will be removed and re-linked.\n'
-read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
+read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n\n'
 if [[ ! "${REPLY}" =~ ^[Yy]$ ]] ; then
     log INFO "Installation cancelled by user."
     exit 0
@@ -70,7 +69,6 @@ fi
 
 mkdir -p "${BACKUP_DIR}"
 log INFO "Backup directory created: ${BACKUP_DIR}"
-printf '\n'
 
 # install
 platform_dir="$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))"
@@ -83,7 +81,7 @@ fi
 log INFO "Changing current directory to ${platform_dir}"
 cd "${platform_dir}"
 
-source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
+source ./scripts/install.func.sh "$(pwd)" "${BACKUP_DIR}"
 
 for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" \
     -not -name ".git" \
