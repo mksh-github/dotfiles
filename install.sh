@@ -3,13 +3,18 @@ set -euCo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/utils/log.sh"
 
-readonly BACKUP_DIR="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
-readonly DOTFILES_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_DIR="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
+readonly BACKUP_DIR
+DOTFILES_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_REPO_ROOT
 
 function get_symlink_target_dir () {
     local platform_dotfiles_dir=""
-    local os_type="$(uname | tr '[:upper:]' '[:lower:]')"
-    local machine_arch="$(uname -m)"
+    local os_type=""
+    local machine_arch=""
+
+    os_type="$(uname | tr '[:upper:]' '[:lower:]')"
+    machine_arch="$(uname -m)"
 
     case "${os_type}" in
         linux)
@@ -50,14 +55,16 @@ function get_symlink_target_dir () {
     if [ ! -d "${platform_dotfiles_dir}" ]; then
         error_exit "Platform-specific dotfiles directory not found: ${platform_dotfiles_dir}"
     fi
-    printf "${platform_dotfiles_dir}\n"
+    printf '%s\n' "${platform_dotfiles_dir}"
 }
 
 function main() {
+    local platform_dir=""
+
     # confirm
     printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" "${BACKUP_DIR}"
     printf 'Existing symlinks will be removed and re-linked.\n'
-    read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n\n'
+    read -r -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n\n'
     if [[ ! "${REPLY}" =~ ^[Yy]$ ]] ; then
         log INFO "Installation cancelled by user."
         exit 0
@@ -67,9 +74,9 @@ function main() {
     log INFO "Backup directory created: ${BACKUP_DIR}"
 
     # install
-    platform_dir="$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))"
+    platform_dir="$(get_symlink_target_dir "$(dirname "${BASH_SOURCE[0]}")")"
     if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
-        echo $platform_dir
+        echo "${platform_dir}"
         log ERROR "Failed to execute get_symlink_target_dir"
         exit 1
     fi
@@ -79,20 +86,20 @@ function main() {
 
     source ./scripts/install.func.sh "$(pwd)" "${BACKUP_DIR}"
 
-    for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" \
+    find "$(pwd)" -maxdepth 1 -name ".*" \
         -not -name ".git" \
         -not -name ".gitignore" \
-        -not -name ".DS_Store") ;
-    do
-        filename="$(basename ${dotfile_source})"
+        -not -name ".DS_Store" | \
+    while read -r dotfile_source ; do
+        filename="$(basename "${dotfile_source}")"
         symlink_target_path="${HOME}/${filename}"
 
         if [ -L "${symlink_target_path}" ] ; then
             log INFO "Removing existing symlink: \"${symlink_target_path}\""
-            unlink ${symlink_target_path}
+            unlink "${symlink_target_path}"
         elif [ -f "${symlink_target_path}" ] ; then
             log INFO "Backing up existing file: \"${symlink_target_path}\" to \"${BACKUP_DIR}/${filename}\""
-            mv ${symlink_target_path} ${BACKUP_DIR}
+            mv "${symlink_target_path}" "${BACKUP_DIR}"
         elif [ -d "${symlink_target_path}" ] ; then
             # アプリケーション固有の設定データ
             [ "${filename}" = '.config' ] && symlink_application_config
