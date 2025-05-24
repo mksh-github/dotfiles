@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$(dirname "${BASH_SOURCE[0]}")/utils/log.sh"
+
 function get_symlink_target_dir () {
     local -r DOTFILES_REPO_ROOT=${1}
     local platform_dotfiles_dir=
@@ -7,7 +9,7 @@ function get_symlink_target_dir () {
     local machine_arch="${machine_arch}"
 
     if [ ! -d "${DOTFILES_REPO_ROOT}" ] ; then
-        printf "no exists \"%s\"\n" ${DOTFILES_REPO_ROOT}
+        log WARN "no exists \"${DOTFILES_REPO_ROOT}\""
         return 1
     fi
 
@@ -21,11 +23,11 @@ function get_symlink_target_dir () {
                 if [ -f '/etc/debian_version' ] ; then
                     platform_dotfiles_dir=${platform_dotfiles_dir}/debian
                 else
-                    printf 'unsupported platform\n'
+                    log ERROR 'unsupported platform'
                     exit 1
                 fi
             else
-                printf 'unsupported platform\n'
+                log ERROR 'unsupported platform'
                 exit 1
             fi
             ;;
@@ -38,16 +40,16 @@ function get_symlink_target_dir () {
                 platform_dotfiles_dir=${platform_dotfiles_dir}/m1
             else
                 # platform_dotfiles_dir=${platform_dotfiles_dir}/intel
-                printf 'unsupported platform\n'
+                log ERROR 'unsupported platform'
                 exit 1
             fi
 
             # TODO:
-            printf 'macOS is unsupported. But this will be released in the future.\n'
+            log WARN 'macOS is unsupported. But this will be released in the future.'
             exit 0
             ;;
         *)
-            printf 'unsupported platform\n'
+            log ERROR 'unsupported platform'
             exit 1
     esac
 
@@ -55,7 +57,7 @@ function get_symlink_target_dir () {
 }
 
 if [ ${0} != ${BASH_SOURCE} ] ; then
-    printf 'exit\n'
+    log WARN 'exit'
     return 0
 fi
 
@@ -83,10 +85,10 @@ for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -
 
     if [ -L "${symlink_target_path}" ] ; then
         unlink ${symlink_target_path} &&
-        printf "* unlink %s\n" ${symlink_target_path}
+        log INFO "* unlink \"${symlink_target_path}\""
     elif [ -f "${symlink_target_path}" ] ; then
         mv ${symlink_target_path} ${BACKUP_DIR} &&
-        printf "* mv %s %s\n" ${symlink_target_path} ${BACKUP_DIR}
+        log INFO "* mv \"${symlink_target_path}\" \"${BACKUP_DIR}\""
     elif [ -d "${symlink_target_path}" ] ; then
         # アプリケーション固有の設定データ
         [ "$(basename ${dotfile_source})" = '.config' ] && symlink_application_config
@@ -95,7 +97,7 @@ for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -
     fi
 
     ln -s ${dotfile_source} ${symlink_target_path} &&
-    printf "  %s -> %s\n" ${symlink_target_path} ${dotfile_source}
+    log INFO "  \"${symlink_target_path}\" -> \"${dotfile_source}\""
 done
 
 # cleanup empty backup directories
