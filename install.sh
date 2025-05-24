@@ -90,7 +90,7 @@ for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" \
     -not -name ".gitignore" \
     -not -name ".DS_Store") ;
 do
-    local filename=$(basename "${dotfile_source}")
+    filename="$(basename ${dotfile_source})"
     symlink_target_path="${HOME}/${filename}"
 
     if [ -L "${symlink_target_path}" ] ; then
@@ -101,8 +101,8 @@ do
         mv ${symlink_target_path} ${BACKUP_DIR}
     elif [ -d "${symlink_target_path}" ] ; then
         # アプリケーション固有の設定データ
-        [ "$(basename ${dotfile_source})" = '.config' ] && symlink_application_config
-        [ "$(basename ${dotfile_source})" = '.ssh' ] && replace_ssh_config
+        [ "${filename}" = '.config' ] && symlink_application_config
+        [ "${filename}" = '.ssh' ] && replace_ssh_config
         continue
     fi
 
