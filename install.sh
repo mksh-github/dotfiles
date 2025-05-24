@@ -67,17 +67,18 @@ readonly BACKUP_DIR="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
 printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" ${BACKUP_DIR}
 printf 'Existing symlinks will be removed and re-linked.\n'
 read -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
-if [[ ${REPLY} =~ ^[Yy]$ ]] ; then
-    mkdir -p ${BACKUP_DIR}
-    log INFO "Backup directory created: ${BACKUP_DIR}"
-    printf '\n'
-else
+if [[ ! "${REPLY}" =~ ^[Yy]$ ]] ; then
+    log INFO "Installation cancelled by user."
     exit 0
 fi
 
+mkdir -p "${BACKUP_DIR}"
+log INFO "Backup directory created: ${BACKUP_DIR}"
+printf '\n'
+
 # install
 platform_dir="$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))"
-cd $platform_dir || exit 1
+cd $platform_dir || "Failed to change directory to ${platform_dir}" ; exit 1
 
 source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
 
