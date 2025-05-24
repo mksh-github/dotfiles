@@ -25,11 +25,9 @@ function get_symlink_target_dir () {
                     platform_dotfiles_dir=${platform_dotfiles_dir}/debian
                 else
                     log ERROR 'Unsupported Linux distribution on Crostini. Debian is expected.'
-                    exit 1
                 fi
             else
                 log ERROR 'Unsupported Linux environment. This script is primarily for Crostini.'
-                exit 1
             fi
             ;;
         darwin) # macOS
@@ -39,58 +37,72 @@ function get_symlink_target_dir () {
             else # Intel Mac
                 # platform_dotfiles_dir=${platform_dotfiles_dir}/intel
                 log ERROR "Unsupported macOS architecture: ${machine_arch}."
-                exit 1
             fi
 
             # TODO:
             log WARN 'macOS is unsupported. But this will be released in the future.'
-            exit 0
+            return 0
             ;;
         *)
             log ERROR "Unsupported OS: ${os_type}."
-            exit 1
             ;;
     esac
 
     if [ ! -d "${platform_dotfiles_dir}" ]; then
-        error_exit "Platform-specific dotfiles directory not found: ${platform_dotfiles_dir}"
+        log ERROR "Platform-specific dotfiles directory not found: ${platform_dotfiles_dir}"
+        return 1
     fi
+
     printf '%s\n' "${platform_dotfiles_dir}"
+    return 0
 }
 
 function main() {
     local platform_dir=""
 
+    platform_dir="$(get_symlink_target_dir "$(dirname "${BASH_SOURCE[0]}")")"
+    if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
+        log INFO "No platform detected"
+        return 0
+    else
+        log INFO "Platform detected. Using dotfiles from: ${platform_dir}"
+    fi
+
     # confirm
     printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" "${BACKUP_DIR}"
     printf 'Existing symlinks will be removed and re-linked.\n'
-    read -r -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n\n'
+    read -r -p 'Would you like to continue? (y/N): ' -n 1 ; printf '\n'
     if [[ ! "${REPLY}" =~ ^[Yy]$ ]] ; then
         log INFO "Installation cancelled by user."
-        exit 0
+        return 0
     fi
 
     mkdir -p "${BACKUP_DIR}"
     log INFO "Backup directory created: ${BACKUP_DIR}"
 
     # install
-    platform_dir="$(get_symlink_target_dir "$(dirname "${BASH_SOURCE[0]}")")"
-    if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
-        echo "${platform_dir}"
-        log ERROR "Failed to execute get_symlink_target_dir"
-        exit 1
-    fi
-
     log INFO "Changing current directory to ${platform_dir}"
     cd "${platform_dir}"
 
-    source ./scripts/install.func.sh "$(pwd)" "${BACKUP_DIR}"
+    if [ -f "./scripts/install.func.sh" ]; then
+        info "Loading platform-specific functions from ./scripts/install.func.sh"
+        source "./scripts/install.func.sh" "$(pwd)" "${BACKUP_DIR}" # 第1引数: platform_dir, 第2引数: BACKUP_DIR
+        info "Loaded platform-specific functions."
+    else
+        log ERROR "Platform-specific install functions (./scripts/install.func.sh) not found in ${platform_dir}"
+        return 1
+    fi
+
+    log INFO "Linking dotfiles in HOME directory..."
 
     find "$(pwd)" -maxdepth 1 -name ".*" \
         -not -name ".git" \
         -not -name ".gitignore" \
         -not -name ".DS_Store" | \
     while read -r dotfile_source ; do
+        local filename
+        local symlink_target_path
+
         filename="$(basename "${dotfile_source}")"
         symlink_target_path="${HOME}/${filename}"
 
@@ -112,9 +124,9 @@ function main() {
     done
 
     # cleanup empty backup directories
-    rmdir /tmp/dotfiles_backup/* 2&> /dev/null
+    find "${BACKUP_DIR}" -maxdepth 0 -type d -empty -delete 2>/dev/null || true
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main
+    main "$@" || exit "$?"
 fi
