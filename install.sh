@@ -3,13 +3,14 @@
 function get_symlink_target_dir () {
     local -r DOTFILES_REPO_ROOT=${1}
     local platform_dotfiles_dir=
+    local os_type="$(uname | tr '[:upper:]' '[:lower:]')"
 
     if [ ! -d "${DOTFILES_REPO_ROOT}" ] ; then
         printf "no exists \"%s\"\n" ${DOTFILES_REPO_ROOT}
         return 1
     fi
 
-    case "$(uname | tr \"[:upper:]\" \"[:lower:]\")" in
+    case "${os_type}" in
         'linux')
             if [ "$(uname -n)" = 'penguin' ] ; then
                 # Crostini
