@@ -1,3 +1,8 @@
+# SSH keychain
+if [ "$(ssh-add -l)" = 'The agent has no identities.' ] ; then
+    ssh-add --apple-load-keychain
+fi
+
 # Homebrew & Rosetta2
 # NOTE: reference: https://zenn.dev/sprout2000/articles/aad599d3625242
 function a64zsh () {
@@ -48,9 +53,4 @@ if (( $+commands[brew] )) ; then
   echo $(arch)
   # echo "$(brew config)" | cat | grep 'Rosetta'
   # echo "$(which brew)"
-fi
-
-# SSH keychain
-if [ "$(ssh-add -l)" = 'The agent has no identities.' ] ; then
-    ssh-add --apple-load-keychain
 fi
