@@ -80,7 +80,8 @@ if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
     exit 1
 fi
 
-cd $platform_dir || "Failed to change directory to ${platform_dir}" ; exit 1
+log INFO "Changing current directory to ${platform_dir}"
+cd "${platform_dir}"
 
 source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
 
