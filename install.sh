@@ -3,6 +3,7 @@ set -euCo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/utils/log.sh"
 
+readonly BACKUP_DIR="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
 readonly DOTFILES_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 function get_symlink_target_dir () {
@@ -57,8 +58,6 @@ if [ ${0} != ${BASH_SOURCE} ] ; then
     log WARN 'exit'
     return 0
 fi
-
-readonly BACKUP_DIR="/tmp/dotfiles_backup/$(date '+%Y%m%d%H%M%S')"
 
 # confirm
 printf "Existing dotfiles in your HOME directory will be backed up to \"%s\".\n" ${BACKUP_DIR}
