@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 function get_symlink_target_dir () {
-    local -r DOTFILES_REPO=${1}
+    local -r DOTFILES_REPO_ROOT=${1}
     local symlink_target_dir=
 
-    if [ ! -d "${DOTFILES_REPO}" ] ; then
-        printf "no exists \"%s\"\n" ${DOTFILES_REPO}
+    if [ ! -d "${DOTFILES_REPO_ROOT}" ] ; then
+        printf "no exists \"%s\"\n" ${DOTFILES_REPO_ROOT}
         return 1
     fi
 
@@ -14,7 +14,7 @@ function get_symlink_target_dir () {
             if [ "$(uname -n)" = 'penguin' ] ; then
                 # Crostini
                 # NOTE: penguin only
-                symlink_target_dir=${DOTFILES_REPO}/crostini
+                symlink_target_dir=${DOTFILES_REPO_ROOT}/crostini
 
                 if [ -f '/etc/debian_version' ] ; then
                     symlink_target_dir=${symlink_target_dir}/debian
@@ -28,7 +28,7 @@ function get_symlink_target_dir () {
             fi
             ;;
         'darwin')
-            symlink_target_dir=${DOTFILES_REPO}/macos
+            symlink_target_dir=${DOTFILES_REPO_ROOT}/macos
 
             if [ "$(uname -m)" = 'arm64' ] ; then
                 # M1 Mac
