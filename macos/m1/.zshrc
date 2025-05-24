@@ -9,7 +9,7 @@ if [ "$(ssh-add -l)" = 'The agent has no identities.' ] ; then
 fi
 
 # Homebrew & Rosetta2
-function a64zsh () { (( $+commands[arch] )) && exec arch -arm64e /bin/zsh }
+function a64zsh () { (( $+commands[arch] )) && exec arch -arm64 /bin/zsh }
 function x64zsh () { (( $+commands[arch] )) && exec arch -x86_64 /bin/zsh }
 
 if [ "$(uname -m)" = "arm64" ] ; then
