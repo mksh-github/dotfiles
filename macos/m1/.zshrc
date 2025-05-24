@@ -4,7 +4,7 @@ export LSCOLORS=cxfxcxdxbxegedabagacad
 alias ls='ls -G'
 
 # SSH keychain
-if [ "$(ssh-add -l)" = 'The agent has no identities.' ] ; then
+if [[ "$(ssh-add -l)" == 'The agent has no identities.' ]] ; then
     ssh-add --apple-load-keychain
 fi
 
@@ -16,7 +16,7 @@ if [[ $+commands[brew] ]] ; then
   echo $(arch)
 fi
 
-if [ "$(uname -m)" = "arm64" ] ; then
+if [[ "$(uname -m)" == "arm64" ]] ; then
   typeset -U path PATH
   path=(
     /opt/homebrew/bin(N-/)
