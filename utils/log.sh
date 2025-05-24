@@ -7,12 +7,15 @@ exec 1> >(tee -a "$_LOG_FILE_PATH") 2>&1
 set -C
 
 function log() {
-    local level=$(echo "$1" | tr '[:lower:]' '[:upper:]')
+    local level=""
+    level=$(echo "${1}" | tr '[:lower:]' '[:upper:]')
     shift
     local message="$*"
 
     local green=$'\e[32m' yellow=$'\e[33m' red=$'\e[31m' reset=$'\e[0m'
     local color_code=""
+    local ts=""
+    ts="$(date '+%Y-%m-%d %H:%M:%S %Z')"
 
     case "${level}" in
         INFO)  color_code=$green  ;;
@@ -22,14 +25,8 @@ function log() {
                level=INFO color_code="${green}" ;;
     esac
 
-    local ts="$(date '+%Y-%m-%d %H:%M:%S %Z')"
-
     # NOTE: Use %b to interpret escape sequences
-    if [[ "${level}" == ERROR ]]; then
-        printf '%s %b[%s]%b %s\n' "${ts}" "${color_code}" "${level}" "${reset}" "${message}" >&2
-    else
-        printf '%s %b[%s]%b %s\n' "${ts}" "${color_code}" "${level}" "${reset}" "${message}"
-    fi
+    printf '%s %b[%s]%b %s\n' "${ts}" "${color_code}" "${level}" "${reset}" "${message}" >&2
 }
 
 printf '%s\n\n' "$(bash --version | head -n1)"
