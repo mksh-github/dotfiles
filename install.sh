@@ -4,6 +4,7 @@ function get_symlink_target_dir () {
     local -r DOTFILES_REPO_ROOT=${1}
     local platform_dotfiles_dir=
     local os_type="$(uname | tr '[:upper:]' '[:lower:]')"
+    local machine_arch="${machine_arch}"
 
     if [ ! -d "${DOTFILES_REPO_ROOT}" ] ; then
         printf "no exists \"%s\"\n" ${DOTFILES_REPO_ROOT}
@@ -31,7 +32,7 @@ function get_symlink_target_dir () {
         'darwin')
             platform_dotfiles_dir=${DOTFILES_REPO_ROOT}/macos
 
-            if [ "$(uname -m)" = 'arm64' ] ; then
+            if [ "${machine_arch}" = 'arm64' ] ; then
                 # M1 Mac
                 # NOTE: Rosetta is disabled
                 platform_dotfiles_dir=${platform_dotfiles_dir}/m1
