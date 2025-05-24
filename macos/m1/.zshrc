@@ -17,7 +17,7 @@ function x64zsh () {
   # echo "switch to 'x86_64'"
   exec arch -x86_64 /bin/zsh
 }
-  
+
 if [ "$(uname -m)" = "arm64" ] ; then
   typeset -U path PATH
   path=(
@@ -49,26 +49,6 @@ if (( $+commands[brew] )) ; then
   # echo "$(brew config)" | cat | grep 'Rosetta'
   # echo "$(which brew)"
 fi
-
-# Pyenv
-if [ "$(uname -m)" = "arm64" ] ; then
-  export PYENV_ROOT="${HOME}/.pyenv_a64"
-  export PATH="$(brew --prefix pyenv)/bin:$PATH"
-else
-  export PYENV_ROOT="${HOME}/.pyenv_x64"
-  export PATH="$(brew --prefix pyenv)/bin:$PATH"
-fi
-eval "$($(brew --prefix pyenv)/bin/pyenv init -)"
-eval "$($(brew --prefix pyenv)/bin/pyenv init --path)"
-
-# nvm path
-if [ "$(uname -m)" = "arm64" ] ; then
-  export NVM_DIR="${HOME}/.nvm_a64"
-else
-  export NVM_DIR="${HOME}/.nvm_x64"
-fi
-[ -s "$(brew --prefix nvm)/nvm.sh" ] && . "$(brew --prefix nvm)/nvm.sh" # This loads nvm
-[ -s "$(brew --prefix nvm)/etc/bash_completion.d/nvm" ] && . "$(brew --prefix nvm)/etc/bash_completion.d/nvm" # This loads nvm bash_completion
 
 # SSH keychain
 if [ "$(ssh-add -l)" = 'The agent has no identities.' ] ; then
