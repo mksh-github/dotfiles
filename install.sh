@@ -8,7 +8,7 @@ readonly DOTFILES_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 function get_symlink_target_dir () {
     local platform_dotfiles_dir=
     local os_type="$(uname | tr '[:upper:]' '[:lower:]')"
-    local machine_arch="${machine_arch}"
+    local machine_arch="$(uname -m)"
 
     case "${os_type}" in
         'linux')
