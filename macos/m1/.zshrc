@@ -1,3 +1,8 @@
+PROMPT='%n %c %% '
+
+export LSCOLORS=cxfxcxdxbxegedabagacad
+alias ls='ls -G'
+
 # SSH keychain
 if [ "$(ssh-add -l)" = 'The agent has no identities.' ] ; then
     ssh-add --apple-load-keychain
