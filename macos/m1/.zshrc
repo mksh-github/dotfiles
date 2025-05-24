@@ -12,6 +12,10 @@ fi
 function a64zsh () { (( $+commands[arch] )) && exec arch -arm64 /bin/zsh }
 function x64zsh () { (( $+commands[arch] )) && exec arch -x86_64 /bin/zsh }
 
+if [[ $+commands[brew] ]] ; then
+  echo $(arch)
+fi
+
 if [ "$(uname -m)" = "arm64" ] ; then
   typeset -U path PATH
   path=(
@@ -36,10 +40,4 @@ else
     /sbin
     /Library/Apple/usr/bin
   )
-fi
-
-if (( $+commands[brew] )) ; then
-  echo $(arch)
-  # echo "$(brew config)" | cat | grep 'Rosetta'
-  # echo "$(which brew)"
 fi
