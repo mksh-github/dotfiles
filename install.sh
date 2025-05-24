@@ -78,7 +78,8 @@ cd "$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))" || exit 1
 source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
 
 for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".gitignore") ; do
-    symlink_target_path="${HOME}/$(basename ${dotfile_source})"
+    local filename=$(basename "${dotfile_source}")
+    symlink_target_path="${HOME}/${filename}"
 
     if [ -L "${symlink_target_path}" ] ; then
         unlink ${symlink_target_path} &&
