@@ -3,16 +3,12 @@ set -euCo pipefail
 
 source "$(dirname "${BASH_SOURCE[0]}")/utils/log.sh"
 
+readonly DOTFILES_REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 function get_symlink_target_dir () {
-    local -r DOTFILES_REPO_ROOT=${1}
     local platform_dotfiles_dir=
     local os_type="$(uname | tr '[:upper:]' '[:lower:]')"
     local machine_arch="${machine_arch}"
-
-    if [ ! -d "${DOTFILES_REPO_ROOT}" ] ; then
-        log WARN "no exists \"${DOTFILES_REPO_ROOT}\""
-        return 1
-    fi
 
     case "${os_type}" in
         'linux')
