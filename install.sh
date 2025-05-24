@@ -75,8 +75,8 @@ cd "$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))" || exit 1
 
 source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
 
-for df in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".gitignore") ; do
-    symlink_target_path="${HOME}/$(basename ${df})"
+for dotfile_source in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".gitignore") ; do
+    symlink_target_path="${HOME}/$(basename ${dotfile_source})"
 
     if [ -L "${symlink_target_path}" ] ; then
         unlink ${symlink_target_path} &&
@@ -86,13 +86,13 @@ for df in $(find "$(pwd)" -maxdepth 1 -name ".*" -not -name ".git" -not -name ".
         printf "* mv %s %s\n" ${symlink_target_path} ${BACKUP_DIR}
     elif [ -d "${symlink_target_path}" ] ; then
         # アプリケーション固有の設定データ
-        [ "$(basename ${df})" = '.config' ] && symlink_application_config
-        [ "$(basename ${df})" = '.ssh' ] && replace_ssh_config
+        [ "$(basename ${dotfile_source})" = '.config' ] && symlink_application_config
+        [ "$(basename ${dotfile_source})" = '.ssh' ] && replace_ssh_config
         continue
     fi
 
-    ln -s ${df} ${symlink_target_path} &&
-    printf "  %s -> %s\n" ${symlink_target_path} ${df}
+    ln -s ${dotfile_source} ${symlink_target_path} &&
+    printf "  %s -> %s\n" ${symlink_target_path} ${dotfile_source}
 done
 
 # cleanup empty backup directories
