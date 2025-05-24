@@ -74,6 +74,12 @@ printf '\n'
 
 # install
 platform_dir="$(get_symlink_target_dir $(dirname ${BASH_SOURCE}))"
+if [ -z "${platform_dir}" ] || [ ! -d "${platform_dir}" ]; then
+    echo $platform_dir
+    log ERROR "Failed to execute get_symlink_target_dir"
+    exit 1
+fi
+
 cd $platform_dir || "Failed to change directory to ${platform_dir}" ; exit 1
 
 source ./scripts/install.func.sh $(pwd) ${BACKUP_DIR}
