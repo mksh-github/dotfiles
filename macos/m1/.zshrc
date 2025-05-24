@@ -16,8 +16,9 @@ if [[ $+commands[brew] ]] ; then
   echo $(arch)
 fi
 
+typeset -U path PATH
+
 if [[ "$(uname -m)" == "arm64" ]] ; then
-  typeset -U path PATH
   path=(
     /opt/homebrew/bin(N-/)
     /opt/homebrew/sbin(N-/)
@@ -30,7 +31,6 @@ if [[ "$(uname -m)" == "arm64" ]] ; then
     /Library/Apple/usr/bin
   )
 else
-  typeset -U path PATH
   path=(
     /usr/local/bin(N-/)
     /usr/local/sbin(N-/)
