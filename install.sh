@@ -2,7 +2,7 @@
 
 function get_symlink_target_dir () {
     local -r DOTFILES_REPO_ROOT=${1}
-    local symlink_target_dir=
+    local platform_dotfiles_dir=
 
     if [ ! -d "${DOTFILES_REPO_ROOT}" ] ; then
         printf "no exists \"%s\"\n" ${DOTFILES_REPO_ROOT}
@@ -14,10 +14,10 @@ function get_symlink_target_dir () {
             if [ "$(uname -n)" = 'penguin' ] ; then
                 # Crostini
                 # NOTE: penguin only
-                symlink_target_dir=${DOTFILES_REPO_ROOT}/crostini
+                platform_dotfiles_dir=${DOTFILES_REPO_ROOT}/crostini
 
                 if [ -f '/etc/debian_version' ] ; then
-                    symlink_target_dir=${symlink_target_dir}/debian
+                    platform_dotfiles_dir=${platform_dotfiles_dir}/debian
                 else
                     printf 'unsupported platform\n'
                     exit 1
@@ -28,14 +28,14 @@ function get_symlink_target_dir () {
             fi
             ;;
         'darwin')
-            symlink_target_dir=${DOTFILES_REPO_ROOT}/macos
+            platform_dotfiles_dir=${DOTFILES_REPO_ROOT}/macos
 
             if [ "$(uname -m)" = 'arm64' ] ; then
                 # M1 Mac
                 # NOTE: Rosetta is disabled
-                symlink_target_dir=${symlink_target_dir}/m1
+                platform_dotfiles_dir=${platform_dotfiles_dir}/m1
             else
-                # symlink_target_dir=${symlink_target_dir}/intel
+                # platform_dotfiles_dir=${platform_dotfiles_dir}/intel
                 printf 'unsupported platform\n'
                 exit 1
             fi
@@ -49,7 +49,7 @@ function get_symlink_target_dir () {
             exit 1
     esac
 
-    echo ${symlink_target_dir}
+    echo ${platform_dotfiles_dir}
 }
 
 if [ ${0} != ${BASH_SOURCE} ] ; then
