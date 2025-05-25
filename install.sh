@@ -111,13 +111,13 @@ function main() {
     fi
 
     if [ -f "./scripts/install.func.sh" ] ; then
-        info "Loading platform-specific functions from ./scripts/install.func.sh"
+        log INFO "Loading platform-specific functions from ./scripts/install.func.sh"
         if [ "${DRY_RUN}" = true ] ; then
             log INFO "DRY RUN: Executing \"./scripts/install.func.sh\""
         else
             source "./scripts/install.func.sh" "$(pwd)" "${BACKUP_DIR}" # 第1引数: platform_dir, 第2引数: BACKUP_DIR
         fi
-        info "Loaded platform-specific functions."
+        log INFO "Loaded platform-specific functions."
     else
         log ERROR "Platform-specific install functions (./scripts/install.func.sh) not found in ${platform_dir}"
         return 1
