@@ -34,7 +34,7 @@ if [[ "$(uname -m)" == "arm64" ]] ; then
     /bin
     /sbin
     /Library/Apple/usr/bin
-    $path # 上書き防止用
+    ${path}
   )
 else
   path=(
@@ -51,7 +51,7 @@ else
     /bin
     /sbin
     /Library/Apple/usr/bin
-    $path # 上書き防止用
+    ${path}
   )
 fi
 
@@ -73,15 +73,15 @@ eval "$(rbenv init - --no-rehash zsh)"
 # rbenv completions
 if [[ -d "${HOME}/.rbenv/completions" ]] ; then
   fpath=(
-    "${HOME}/.rbenv/completions"
-    $fpath
+    ${HOME}/.rbenv/completions
+    ${fpath}
   )
 fi
 
 # 自前の .zfunc
 if [[ -d "${HOME}/.zfunc" ]] ; then
   fpath=(
-    "${HOME}/.zfunc"
-    $fpath
+    ${HOME}/.zfunc
+    ${fpath}
   )
 fi
