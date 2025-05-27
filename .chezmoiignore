@@ -4,3 +4,11 @@ README.md
 ./Library/Application Support/Code/User
 .zshrc
 {{ end }}
+
+{{ if not (and (eq .chezmoi.os "linux") (eq .chezmoi.username "penguin")) }}
+./.config
+.bash_logout
+.bashrc
+.profile
+.sommelierrc
+{{ end }}
