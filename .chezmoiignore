@@ -1,0 +1,9 @@
+README.md
+
+{{ if not (and (eq .chezmoi.os "linux") (eq .chezmoi.username "penguin")) }}
+./.config
+.bash_logout
+.bashrc
+.profile
+.sommelierrc
+{{ end }}
