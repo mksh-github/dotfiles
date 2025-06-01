@@ -1,14 +1,5 @@
 # Read more about SSH config files: https://linux.die.net/man/5/ssh_config
 
-# GCP
-Host gcp
-  # StrictHostKeyChecking no
-  UseKeychain yes
-  AddKeysToAgent yes
-  HostName source.developers.google.com
-  Port 2022
-  IdentityFile ~/.ssh/id_ed25519_gcp_macbookair
-
 # GitHub
 Host github github.com
   UseKeychain yes
@@ -16,11 +7,3 @@ Host github github.com
   HostName github.com
   IdentityFile ~/.ssh/id_ed25519_github_macbookair
   User git
-
-# Raspberry Pi
-
-# JETSON NANO
-
-# PIX-MT110
-
-# SORACOM
