@@ -1,4 +1,4 @@
-PROMPT='%n %c %% '
+PROMPT='%c %% '
 
 export LSCOLORS=cxfxcxdxbxegedabagacad
 alias ls='ls -G'
