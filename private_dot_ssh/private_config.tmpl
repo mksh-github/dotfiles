@@ -10,3 +10,14 @@ Host github github.com
   UseKeychain yes
   AddKeysToAgent yes
   {{- end }}
+
+# Bitbucket
+Host bitbucket.org
+  HostName bitbucket.org
+  User git
+  IdentityFile ~/.ssh/id_ed25519_bitbucket_{{ .chezmoi.os }}_{{ .chezmoi.hostname }}
+  IdentitiesOnly yes
+  {{- if eq .chezmoi.os "darwin" }}
+  UseKeychain yes
+  AddKeysToAgent yes
+  {{- end }}
