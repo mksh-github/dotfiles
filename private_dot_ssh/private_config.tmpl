@@ -2,8 +2,11 @@
 
 # GitHub
 Host github github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_github_{{ .chezmoi.os }}_{{ .chezmoi.hostname }}
+  IdentitiesOnly yes
+  {{- if eq .chezmoi.os "darwin" }}
   UseKeychain yes
   AddKeysToAgent yes
-  HostName github.com
-  IdentityFile ~/.ssh/id_ed25519_github_macbookair
-  User git
+  {{- end }}
